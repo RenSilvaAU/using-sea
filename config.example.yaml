@@ -1,0 +1,104 @@
+# yaml-language-server: $schema=./config.schema.json
+experiment:
+  # Required: The name of the experiment you wish to run.
+  name: "batch-transcription"
+  # Required: The name of the data asset to be used
+  data_asset_name: "validate"
+  # Optional: The version of the data asset to be used
+  data_asset_version: "6"
+  # Optional: if set, limits the number of samples to be used for the experiment
+  #           if not set, all available files are used
+  max_files: 5
+  # Optional: Use this to specify a custom configuration for the experiment. This will be passed to the experiment as
+  #           a dictionary.
+  custom_config:
+    some_key: "some value"
+
+# Optional
+# TODO: Combine speech_service config part, openai and future model calls
+# into a set of subclasses inherited from one. This is required for flexible
+# configuration of the experiment.
+azure_openai:
+  api_version: "YOUR API VERSION"
+  deployment: "YOUR DEPLOYMENT NAME"
+  connection_name: "openai-connection"
+
+speech_service:
+  # Optional: If you do not supply a connection name, it will default to "speech-connection". You can create
+  #           your own API Key Speech Connection in the AI Studio Portal and use it should you wish.
+  #           https://learn.microsoft.com/en-us/azure/ai-studio/how-to/connections-add
+  connection_name: "speech-connection"
+  polling_interval_seconds: 10.0
+  # Optional: Use this to specify a custom model URL to use for the experiment. If not provided, the default model will
+  #           be used. Use the list models API to get a list of available models
+  #           https://learn.microsoft.com/en-us/rest/api/speechtotext/models/list-base-models?view=rest-speechtotext-v3.2-preview.2&tabs=HTTP.
+  user_model_url: "custom model url"
+  # Optional: Use this to specify the locale of the audio. If not provided, the default language will
+  #           be used. Use the List Supported Locales API to get a list of supported locales for your speech service instance:
+  #           https://learn.microsoft.com/en-us/rest/api/speechtotext/transcriptions/list-supported-locales?view=rest-speechtotext-v3.2-preview.2&tabs=HTTP.
+  locale: "en-US"
+
+# Job configuration. Used when running the `sea job` or `sea register-datastore` commands.
+job:
+  # Required if running `sea job`: The name of the compute to run the job on.
+  compute: "some-compute-123"
+  # Optional: The job name prefix. This will be appended with a dash and the timestamp in ms. If not provided, job name
+  #           will be randomly generated.
+  name_prefix: "some-job"
+  # Optional: The name of the experiment to log the job to. If not provided, the job will not be logged to an
+  #           experiment.
+  experiment_name: "some-experiment"
+
+training:
+  # Required if running the `sea model register-dataset` command: The datasets to register.
+  datasets:
+    # Required: The key is the name of the dataset.
+    my-dataset:
+      # Required: The name of the project to register the dataset to.
+      project: my-project
+      # Required: The locale of the dataset.
+      locale: en-US
+      # Required: The kind of dataset.
+      kind: Acoustic
+      # Required: The absolute or relative path to the dataset.
+      path: /path/to/dataset
+  # This is only used when running the `sea model train` command.
+  custom_models:
+    my-model:
+      description: My Model
+      project: my-project
+      locale: en-US
+      base_model: '12345678'
+      datasets:
+        - my-dataset
+      properties:
+        customModelWeightPercent: 30
+
+properties:
+  diarizationEnabled: true
+  wordLevelTimestampsEnabled: false
+  displayFormWordLevelTimestampsEnabled: false
+  channels:
+    - 0
+    - 1
+  punctuationMode: DictatedAndAutomatic
+  profanityFilterMode: Masked
+  duration: PT42S
+  diarization:
+    speakers:
+      minCount: 3
+      maxCount: 5
+
+dataset:
+  dataset_name: "PolyAI/minds14"
+  dataset_config: "en-US"
+  train_test_split_ratio: 0.2
+  train_validation_split_ratio: 0.25
+  train_path: "azureml://datastores/train/paths/"
+  validate_path: "azureml://datastores/validate/paths/"
+  test_path: "azureml://datastores/test/paths/"
+  audio_extension: ".wav"
+
+reporting:
+  folder: "results"
+  enabled: true
