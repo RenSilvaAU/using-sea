@@ -12,4 +12,4 @@ If you would like to run it locally, you will need extra configuration:
 - download the `config.json` file and place it in the target folder
 
 ## Using it
-To run experiments, go to [./using-sea-run/1.sea-run.ipynb](./using-sea-run/1.sea-run.ipynb)
+To run experiments, go to [1.sea-run.ipynb](./1%20using-sea-run/1.sea-run.ipynb)
